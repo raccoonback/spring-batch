@@ -4,10 +4,19 @@ spring:
     url: jdbc:mysql://localhost:3306/spring_batch
     username: root
     password: 1234
+
+#  sql:
+#    init:
+#      platform: mysql
+#      continue-on-error: false
+#      mode: always
+
   batch:
     jdbc:
       initialize-schema: always
 
 
 #    job:
-#      names: explorerJob
+#      names: transactionsssJob
+
+
