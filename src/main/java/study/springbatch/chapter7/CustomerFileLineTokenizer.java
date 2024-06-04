@@ -1,4 +1,4 @@
-package study.springbatch.chapter7.flatfile;
+package study.springbatch.chapter7;
 
 import org.springframework.batch.item.file.transform.DefaultFieldSetFactory;
 import org.springframework.batch.item.file.transform.FieldSet;

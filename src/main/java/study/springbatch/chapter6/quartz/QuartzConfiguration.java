@@ -1,7 +1,5 @@
 package study.springbatch.chapter6.quartz;
 
-import org.quartz.*;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

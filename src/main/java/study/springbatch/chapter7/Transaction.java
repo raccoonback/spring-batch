@@ -1,4 +1,4 @@
-package study.springbatch.chapter7.flatfile;
+package study.springbatch.chapter7;
 
 import lombok.Getter;
 import lombok.Setter;
