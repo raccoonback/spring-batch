@@ -7,6 +7,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -232,16 +233,33 @@ public class BatchConfigurations {
 //                .build();
 //    }
 
+//    @Bean
+//    @StepScope
+//    public RepositoryItemReader<Customer> customerItemReader(CustomerRepository repository, @Value("#{jobParameters['city']}") String city) {
+//        return new RepositoryItemReaderBuilder<Customer>()
+//                .name("customerItemReader")
+//                .arguments(Collections.singletonList(city))
+//                .methodName("findByCity")
+//                .repository(repository)
+//                .sorts(Collections.singletonMap("lastName" , Sort.Direction.ASC))
+//                .build();
+//    }
+
     @Bean
-    @StepScope
-    public RepositoryItemReader<Customer> customerItemReader(CustomerRepository repository, @Value("#{jobParameters['city']}") String city) {
-        return new RepositoryItemReaderBuilder<Customer>()
-                .name("customerItemReader")
-                .arguments(Collections.singletonList(city))
-                .methodName("findByCity")
-                .repository(repository)
-                .sorts(Collections.singletonMap("lastName" , Sort.Direction.ASC))
-                .build();
+    public CustomerItemReader customerItemReader() {
+        CustomerItemReader customerItemReader = new CustomerItemReader();
+        customerItemReader.setName("customerItemReader");
+        return customerItemReader;
+    }
+
+    @Bean
+    public CustomerItemListener customerItemListener() {
+        return new CustomerItemListener();
+    }
+
+    @Bean
+    public EmptyInputStepFailer emptyInputStepFailer() {
+        return new EmptyInputStepFailer();
     }
 
     @Bean
@@ -308,8 +326,12 @@ public class BatchConfigurations {
     public Step copyFileStep() {
         return this.stepBuilderFactory.get("copyFileStep")
                 .<Customer, Customer>chunk(10)
-                .reader(customerItemReader(null, null))
+                .reader(customerItemReader())
                 .writer(itemWriter())
+                .faultTolerant()
+                .skipLimit(100)
+                .skip(Exception.class)
+                .listener(emptyInputStepFailer())
                 .build();
     }
 
