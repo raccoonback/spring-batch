@@ -28,17 +28,17 @@ import javax.persistence.Table;
 /**
  * @author Michael Minella
  */
-//@Entity
-//@Table(name = "CUSTOMER")
+@Entity
+@Table(name = "CUSTOMER")
 //@NodeEntity
 //@Region(value = "Customers")
 public class Customer implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 //	@GeneratedValue(strategy = UuidStrategy.class)
-	private String id;
+	private Long id;
 	private String firstName;
 	private String middleInitial;
 	private String lastName;
@@ -48,11 +48,11 @@ public class Customer implements Serializable {
 	private String zipCode;
 //	private String email;
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
