@@ -24,6 +24,7 @@ spring:
       naming:
         implicit-strategy: "org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl"
         physical-strategy: "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl"
+      ddl-auto: update
     properties:
       hibernate:
         current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
@@ -31,3 +32,19 @@ spring:
 #  data:
 #    mongodb:
 #      database: customerdb
+
+  jms:
+    template:
+      default-destination: customers
+      receive-timeout: 5000
+  activemq:
+    packages:
+      trust-all: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: 'test'
+    password: 'test'
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true

@@ -46,7 +46,7 @@ public class Customer implements Serializable {
 	private String city;
 	private String state;
 	private String zipCode;
-//	private String email;
+	private String email;
 
 	public Long getId() {
 		return id;
@@ -112,13 +112,13 @@ public class Customer implements Serializable {
 		this.zipCode = zipCode;
 	}
 
-//	public String getEmail() {
-//		return email;
-//	}
-//
-//	public void setEmail(String email) {
-//		this.email = email;
-//	}
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	@Override
 	public String toString() {
@@ -131,6 +131,7 @@ public class Customer implements Serializable {
 				", city='" + city + '\'' +
 				", state='" + state + '\'' +
 				", zipCode='" + zipCode + '\'' +
+				", email='" + email + '\'' +
 				'}';
 	}
 }
