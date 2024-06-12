@@ -62,7 +62,7 @@ public class XmlFileJob {
 
     @Bean
     @StepScope
-    public StaxEventItemWriter<Customer> customerItemWriter(@Value("#{jobParameters['outputFile']}") Resource outputFile) {
+    public StaxEventItemWriter<Customer> customerItemWriter(@Value("#{jobParameters['outputFile']}") Resource outputFile, CustomerXmlHeaderCallback headerCallback) {
         Map<String, Class> aliases = new HashMap<>();
         aliases.put("customer", Customer.class);
 
@@ -74,6 +74,7 @@ public class XmlFileJob {
                 .resource(outputFile)
                 .marshaller(marshaller)
                 .rootTagName("customers")
+                .headerCallback(headerCallback)
                 .build();
     }
 
@@ -82,7 +83,7 @@ public class XmlFileJob {
         return this.stepBuilderFactory.get("xmlFileStep")
                 .<Customer, Customer> chunk(10)
                 .reader(customerFileReader(null))
-                .writer(customerItemWriter(null))
+                .writer(customerItemWriter(null, null))
                 .build();
     }
 

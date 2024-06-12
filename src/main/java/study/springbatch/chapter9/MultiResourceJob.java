@@ -9,8 +9,11 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.MultiResourceItemWriter;
 import org.springframework.batch.item.file.builder.MultiResourceItemWriterBuilder;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.FormatterLineAggregator;
 import org.springframework.batch.item.xml.StaxEventItemWriter;
 import org.springframework.batch.item.xml.builder.StaxEventItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,10 +67,37 @@ public class MultiResourceJob {
     }
 
     @Bean
+    @StepScope
+    public FlatFileItemWriter<Customer> delegateCustomerItemWriter(CustomerRecordCountFooterCallback footerCallback) {
+        BeanWrapperFieldExtractor<Customer> fieldExtractor = new BeanWrapperFieldExtractor<>();
+        fieldExtractor.setNames(new String[]{
+                "firstName",
+                "lastName",
+                "address",
+                "city",
+                "state",
+                "zipCode",
+        });
+        fieldExtractor.afterPropertiesSet();
+
+        FormatterLineAggregator<Customer> lineAggregator = new FormatterLineAggregator<>();
+        lineAggregator.setFormat("%s %s lives at %s %s in %s, %s.");
+        lineAggregator.setFieldExtractor(fieldExtractor);
+
+        FlatFileItemWriter<Customer> itemWriter = new FlatFileItemWriter<>();
+        itemWriter.setName("delegateCustomerItemWriter");
+        itemWriter.setLineAggregator(lineAggregator);
+        itemWriter.setAppendAllowed(true);
+        itemWriter.setFooterCallback(footerCallback);
+
+        return itemWriter;
+    }
+
+    @Bean
     public MultiResourceItemWriter<Customer> multiCustomerFileWriter(CustomerOutputFileSuffixCreator suffixCreator) {
         return new MultiResourceItemWriterBuilder<Customer>()
                 .name("multiCustomerFileWriter")
-                .delegate(delegateItemWriter())
+                .delegate(delegateCustomerItemWriter(null))
                 .itemCountLimitPerResource(3)
                 .resource(new FileSystemResource("test-customer"))
                 .resourceSuffixCreator(suffixCreator)
@@ -77,7 +107,7 @@ public class MultiResourceJob {
     @Bean
     public Step multiXmlGeneratorStep() {
         return this.stepBuilderFactory.get("multiXmlGeneratorStep")
-                .<Customer, Customer> chunk(10)
+                .<Customer, Customer>chunk(10)
                 .reader(jdbcCursorItemReader(null))
                 .writer(multiCustomerFileWriter(null))
                 .build();
