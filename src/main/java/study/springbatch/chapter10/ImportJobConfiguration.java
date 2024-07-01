@@ -106,7 +106,7 @@ public class ImportJobConfiguration {
     }
 
     @Bean
-    public Step generateStatements(EventFilteringItemProcessor itemProcessor) {
+    public Step generateStatements(AccountItemProcessor itemProcessor) {
         return this.stepBuilderFactory.get("generateStatements")
                 .<Statement, Statement> chunk(1)
                 .reader(statementItemReader(null))
